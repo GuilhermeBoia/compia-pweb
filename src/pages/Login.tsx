@@ -1,7 +1,8 @@
 import { useAuth } from "@/contexts/AuthContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { users } from "@/types/user";
+import { ArrowLeft } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -13,8 +14,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { users } from "@/data/seed";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -22,14 +21,24 @@ export default function Login() {
   const { login, user } = useAuth();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (user) {
+      if (user.role === 'admin') {
+        navigate("/catalogo");
+      } else {
+        navigate("/");
+      }
+    }
+  }, [user, navigate]);
+
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     const isLoggedIn = login(email);
 
     if (isLoggedIn) {
-      const loggedInUser = users.find((u) => u.email === email);
-      if (loggedInUser?.role === "admin") {
-        navigate("/");
+      const foundUser = users.find(u => u.email === email);
+      if (foundUser?.role === 'admin') {
+        navigate("/catalogo");
       } else {
         navigate("/");
       }
@@ -37,16 +46,28 @@ export default function Login() {
   };
 
   if (user) {
-    navigate(user.role === "admin" ? "/" : "/");
     return null;
   }
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
+    <div className="relative flex justify-center items-center h-screen overflow-hidden bg-gray-100 p-4">
       <Card className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 shadow-xl rounded-2xl overflow-hidden py-0">
-        <div className="hidden md:flex flex-col justify-center p-12 bg-zinc-900 text-white">
-          <h2 className="text-4xl font-bold mb-4">Bem vindo, novamente!</h2>
-          <p className="text-zinc-300">
+        <div className="flex flex-col justify-center p-8 md:p-12 bg-slate-900 text-white">
+          <button
+            type="button"
+            onClick={() => navigate("/")}
+            className="mb-6 inline-flex items-center gap-2 self-start px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 text-white"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span className="hidden sm:inline">Voltar</span>
+          </button>
+          <img
+            src="/compia.svg"
+            alt="Compia Logo"
+            className="w-16 h-16 mb-6"
+          />
+          <h2 className="text-4xl font-bold mb-4">Olá, seja bem-vindo!</h2>
+          <p className="text-slate-300">
             Você pode entrar para ter acesso a sua conta.
           </p>
         </div>
@@ -64,7 +85,7 @@ export default function Login() {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="ana@cliente.com"
+                  placeholder="cliente@compia.com ou admin@compia.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -75,39 +96,15 @@ export default function Login() {
                 <Input
                   id="password"
                   type="password"
+                  placeholder="Digite qualquer senha"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
               </div>
-              <div className="flex items-center justify-between text-sm">
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="remember-me" />
-                  <Label htmlFor="remember-me" className="font-normal">
-                    Lembre de mim
-                  </Label>
-                </div>
-                <Link
-                  to="#"
-                  className="font-medium text-blue-600 hover:underline"
-                >
-                  Esqueceu a senha?
-                </Link>
-              </div>
-
-              <Button type="submit" className="w-full text-lg py-6">
+              <Button type="submit" className="w-full text-lg py-6 bg-slate-900 text-white">
                 Entrar
               </Button>
-
-              <div className="text-center text-sm">
-                <span className="text-gray-500">Novo por aqui? </span>
-                <Link
-                  to="#"
-                  className="font-medium text-blue-600 hover:underline"
-                >
-                  Criar uma conta
-                </Link>
-              </div>
             </CardContent>
           </form>
         </div>
