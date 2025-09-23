@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { useProducts } from "@/hooks/use-products";
 import { useCart } from "@/contexts/CartContext";
 import type { Product } from "@/types/product";
@@ -73,6 +73,7 @@ export default function HomePage() {
 
   useEffect(() => {
     loadProducts();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadProducts = async () => {
@@ -87,18 +88,15 @@ export default function HomePage() {
     }
   };
 
-  // Get unique categories from products
   const categories = useMemo(() => {
     const cats = new Set<string>();
     products.forEach((p) => p.categorias.forEach((c) => cats.add(c)));
     return Array.from(cats);
   }, [products]);
 
-  // Filter and sort products
   const filteredProducts = useMemo(() => {
     let filtered = [...products];
 
-    // Search filter
     if (searchTerm) {
       filtered = filtered.filter(
         (p) =>
@@ -108,19 +106,16 @@ export default function HomePage() {
       );
     }
 
-    // Category filter
     if (selectedCategory !== "all") {
       filtered = filtered.filter((p) =>
         p.categorias.includes(selectedCategory)
       );
     }
 
-    // Type filter
     if (selectedType !== "all") {
       filtered = filtered.filter((p) => p.tipo === selectedType);
     }
 
-    // Price filter
     switch (priceRange) {
       case "under50":
         filtered = filtered.filter((p) => p.preco < 50);
@@ -468,7 +463,7 @@ export default function HomePage() {
               {filteredProducts.map((product) => (
                 <motion.div
                   key={product.id}
-                  variants={item}
+                  variants={item as Variants}
                   layout
                   className="group relative"
                 >
