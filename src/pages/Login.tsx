@@ -29,15 +29,15 @@ export default function Login() {
     if (isLoggedIn) {
       const loggedInUser = users.find((u) => u.email === email);
       if (loggedInUser?.role === "admin") {
-        navigate("/");
+        navigate("/minha-conta");
       } else {
-        navigate("/");
+        navigate("/minha-conta");
       }
     }
   };
 
   if (user) {
-    navigate(user.role === "admin" ? "/" : "/");
+    navigate(user.role === "admin" ? "/minha-conta" : "/minha-conta");
     return null;
   }
 
