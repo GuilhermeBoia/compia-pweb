@@ -1,10 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { useCart } from '@/contexts/CartContext'
 import Cart from '@/components/cart'
 import UserAvatar from '@/components/avatar'
-import { ShoppingCart, Package } from 'lucide-react'
+import { ShoppingCart, Package, History, ClipboardList } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 
 export default function Layout() {
@@ -19,6 +19,19 @@ export default function Layout() {
     logout()
     navigate('/')
   }
+
+  // Listen for force close cart event
+  useEffect(() => {
+    const handleForceCloseCart = () => {
+      setIsCartOpen(false)
+    }
+
+    window.addEventListener('force-close-cart', handleForceCloseCart)
+    
+    return () => {
+      window.removeEventListener('force-close-cart', handleForceCloseCart)
+    }
+  }, [])
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col">
@@ -36,28 +49,46 @@ export default function Layout() {
 
           <div className="flex items-center gap-2 md:gap-4">
             {user?.role === 'admin' ? (
-              <Link
-                to="/catalogo"
-                className="flex items-center gap-2 px-3 py-1.5 text-sm hover:bg-slate-100 rounded-lg transition-colors"
-              >
-                <Package className="w-4 h-4" />
-                <span className="hidden sm:inline">Catálogo</span>
-              </Link>
+              <>
+                <Link
+                  to="/catalogo"
+                  className="flex items-center gap-2 px-3 py-1.5 text-sm hover:bg-slate-100 rounded-lg transition-colors"
+                >
+                  <Package className="w-4 h-4" />
+                  <span className="hidden sm:inline">Catálogo</span>
+                </Link>
+                <Link
+                  to="/gestao-pedidos"
+                  className="flex items-center gap-2 px-3 py-1.5 text-sm hover:bg-slate-100 rounded-lg transition-colors"
+                >
+                  <ClipboardList className="w-4 h-4" />
+                  <span className="hidden sm:inline">Pedidos</span>
+                </Link>
+              </>
             ) : (
-              <button
-                onClick={() => setIsCartOpen(true)}
-                className="relative p-2 hover:bg-slate-100 rounded-lg transition-colors"
-              >
-                <ShoppingCart className="w-5 h-5" />
-                {totalItems > 0 && (
-                  <Badge
-                    className="absolute -top-1 -right-1 h-5 min-w-[20px] px-1 bg-slate-900 text-white text-xs"
-                    variant="default"
-                  >
-                    {totalItems}
-                  </Badge>
-                )}
-              </button>
+              <>
+                <Link
+                  to="/historico-compras"
+                  className="flex items-center gap-2 px-3 py-1.5 text-sm hover:bg-slate-100 rounded-lg transition-colors"
+                >
+                  <History className="w-4 h-4" />
+                  <span className="hidden sm:inline">Histórico</span>
+                </Link>
+                <button
+                  onClick={() => setIsCartOpen(true)}
+                  className="relative p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                >
+                  <ShoppingCart className="w-5 h-5" />
+                  {totalItems > 0 && (
+                    <Badge
+                      className="absolute -top-1 -right-1 h-5 min-w-[20px] px-1 bg-slate-900 text-white text-xs"
+                      variant="default"
+                    >
+                      {totalItems}
+                    </Badge>
+                  )}
+                </button>
+              </>
             )}
 
             {user ? (

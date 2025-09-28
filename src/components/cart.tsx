@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,6 +23,7 @@ interface CartProps {
 }
 
 export default function Cart({ isOpen, onClose }: CartProps) {
+  const navigate = useNavigate();
   const {
     items,
     removeFromCart,
@@ -47,6 +49,11 @@ export default function Cart({ isOpen, onClose }: CartProps) {
   const handleCloseProductModal = () => {
     setIsProductModalOpen(false);
     setSelectedProductId(null);
+  };
+
+  const handleCheckout = () => {
+    onClose(); // Close the cart
+    navigate('/checkout'); // Navigate to checkout
   };
 
   return (
@@ -253,7 +260,10 @@ export default function Cart({ isOpen, onClose }: CartProps) {
                       Frete e impostos calculados no checkout.
                     </p>
                     <div className="mt-6 space-y-2">
-                      <Button className="w-full bg-slate-900 hover:bg-slate-800">
+                      <Button 
+                        className="w-full bg-slate-900 hover:bg-slate-800"
+                        onClick={handleCheckout}
+                      >
                         Finalizar Compra
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>

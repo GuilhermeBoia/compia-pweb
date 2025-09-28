@@ -178,6 +178,28 @@ export const api = {
 
       saveMockProducts(filtered)
       return true
+    },
+
+    // Update stock for a product
+    async updateStock(id: string, quantityChange: number): Promise<Product | undefined> {
+      const products = getMockProducts()
+      const index = products.findIndex(p => p.id === id)
+
+      if (index === -1) return undefined
+
+      const existing = products[index]
+      const newStock = Math.max(0, existing.estoque + quantityChange) // Prevent negative stock
+      
+      const updated: Product = {
+        ...existing,
+        estoque: newStock,
+        updatedAt: Date.now()
+      }
+
+      products[index] = updated
+      saveMockProducts(products)
+      console.log(`Stock updated for product ${id}: ${existing.estoque} -> ${newStock} (change: ${quantityChange})`)
+      return updated
     }
   },
 
