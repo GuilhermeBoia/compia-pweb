@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { useCart } from '@/contexts/CartContext';
-import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
 import { Truck, Package, Download, MapPin, Clock } from 'lucide-react';
-import type { ShippingData, ShippingMethod } from '@/types/checkout';
+import type { ShippingMethod } from '@/types/checkout';
 
 export default function ShippingStep() {
   const { shipping, setShipping, customer } = useCheckout();
